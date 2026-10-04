@@ -1,0 +1,149 @@
+:root {
+  --bg: #f2f4f7;
+  --card-bg: #ffffff;
+  --text: #1b1f24;
+  --text-muted: #5b6573;
+  --accent: #0b6bcb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216;
+    --card-bg: #1a1f26;
+    --text: #f0f3f6;
+    --text-muted: #9aa5b3;
+    --accent: #5aa9ff;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 {
+  font-size: 1.25rem;
+  margin: 8px 0 16px;
+}
+
+#departures {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#departures {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "time line"
+    "time stop";
+  column-gap: 20px;
+  align-items: center;
+  min-height: 92px;
+}
+
+.card p {
+  margin: 0;
+}
+.time {
+  grid-area: time;
+  font-size: clamp(2.5rem, 12vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.line {
+  grid-area: line;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stop {
+  grid-area: stop;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+#clock-note {
+  margin: 16px 4px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.message {
+  margin: 24px 4px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+#direction {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 16px;
+  background: var(--card-bg);
+  border-radius: 999px;
+}
+
+#direction button {
+  flex: 1;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#direction button[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.card-message {
+  display: flex;
+  align-items: center;
+}
+
+.message-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.card-empty {
+  opacity: 0.6;
+}
+
+.card-empty .time {
+  color: var(--text-muted);
+}

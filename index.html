@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b6bcb">
+  <link rel="icon" href="icons/icon-192.png">
+
+
+  <title>Próximos Autocarros</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Próximos autocarros</h1>
+
+    <div id="direction" role="group" aria-label="Direção">
+    <button type="button" data-dir="work">Para o trabalho</button>
+    <button type="button" data-dir="home">Do trabalho</button>
+    </div>
+
+
+    <section id="departures"></section>
+
+    <p id="clock-note"></p>
+  </main>
+  
+  <script src="schedule.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
