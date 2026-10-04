@@ -1,6 +1,7 @@
 // Pure logic: no DOM, no clock, no network. Data in, result out.
 
 const GRACE_MINUTES = 10; // keep showing a bus this long after it left
+const SWITCH_MINUTES = 14 * 60; // from 14:00 on, you're going home
 
 // "08:15" -> 495 (minutes since midnight)
 function parseTime(text) {
@@ -8,8 +9,8 @@ function parseTime(text) {
   return h * 60 + m;
 }
 
-// departures: [{ minutes, line, stop }, ...]  (any order, all lines mixed)
-// now:        { weekday, minutes }            (weekday: 0=Sun ... 6=Sat)
+// departures: [{ minutes, line, stop, ... }, ...]  (any order, all lines mixed)
+// now:        { weekday, minutes }                 (weekday: 0=Sun ... 6=Sat)
 // returns:    { status: "ok" | "weekend" | "no-more", items: [...] }
 function getNextDepartures(departures, now, count = 4) {
   if (now.weekday === 0 || now.weekday === 6) {
@@ -25,8 +26,6 @@ function getNextDepartures(departures, now, count = 4) {
 }
 
 // ---------- Direction ----------
-const SWITCH_MINUTES = 14 * 60; // from 14:00 on, you're going home
-
 // "work" before 14:00, "home" from 14:00
 function chooseDirection(now) {
   return now.minutes < SWITCH_MINUTES ? "work" : "home";

@@ -1,20 +1,23 @@
 // ---------- Config ----------
+// color = badge background, text = badge text color, fav = highlighted card
+
 const LINES = [
-  { line: "1", file: "data/L1.csv",
+  { line: "1", file: "data/L1.csv", color: "#e30712", text: "#ffffff",
     stops: { work: "Av. Dr. Lourenço Peixinho- CTT B", home: "Hospital/ Universidade B" } },
-  { line: "2", file: "data/L2.csv",
+  { line: "2", file: "data/L2.csv", color: "#93b6cc", text: "#1b1f24",
     stops: { work: "Av. Dr. Lourenço Peixinho - CTT B", home: "Hospital / Universidade B" } },
-  { line: "3", file: "data/L3.csv",
+  { line: "3", file: "data/L3.csv", color: "#1f2855", text: "#ffffff",
     stops: { work: "Av. Dr. Lourenço Peixinho - CTT B", home: "Hospital / Universidade B" } },
-  { line: "4", file: "data/L4.csv",
+  { line: "4", file: "data/L4.csv", color: "#e6007e", text: "#ffffff",
     stops: { work: "Av. Dr. Lourenço Peixinho - CTT B", home: "Hospital / Universidade B" } },
-  { line: "5", file: "data/L5.csv",
+  { line: "5", file: "data/L5.csv", color: "#bccf00", text: "#1b1f24",
     stops: { work: "Av. Dr. Lourenço Peixinho - CTT B", home: "Hospital / Universidade B" } },
-  { line: "6", file: "data/L6.csv",
+  { line: "6", file: "data/L6.csv", color: "#59babd", text: "#1b1f24", fav: true,
     stops: { work: "Av. Dr. Lourenço Peixinho - CTT B", home: "Hospital / Universidade B" } },
-  { line: "11", file: "data/L11.csv",
+  { line: "11", file: "data/L11.csv", color: "#6956a0", text: "#ffffff", fav: true,
     stops: { work: " Forca - Túnel B", home: "Universidade- Crasto" } },
 ];
+
 
 const CARD_COUNT = 4;
 
@@ -24,7 +27,7 @@ const MESSAGES = {
 };
 
 // ---------- State ----------
-let csvTexts = null; // { "data/L1.csv": "text...", ... }
+let csvTexts = null; // { "data/linha-1.csv": "text...", ... }
 let now = null;
 let direction = null;
 
@@ -94,28 +97,38 @@ function makeParagraph(className, text) {
   return p;
 }
 
+function makeStopParagraph(text) {
+  const p = document.createElement("p");
+  p.className = "stop";
+  const pin = document.createElement("span");
+  pin.className = "pin";
+  pin.textContent = "📍";
+  p.append(pin, document.createTextNode(" " + text));
+  return p;
+}
+
 function makeDepartureCard(dep) {
   const card = document.createElement("article");
   card.className = "card";
+  if (dep.fav) card.classList.add("card-fav");
+  if (dep.minutes < now.minutes) card.classList.add("card-late"); // already left
+
+  const badge = makeParagraph("line", `Linha ${dep.line}`);
+  badge.style.backgroundColor = dep.color;
+  badge.style.color = dep.text;
+
   card.append(
     makeParagraph("time", formatMinutes(dep.minutes)),
-    makeParagraph("line", `Linha ${dep.line}`),
-    makeParagraph("stop", dep.stop)
+    badge,
+    makeStopParagraph(dep.stop)
   );
   return card;
 }
 
-function makeMessageCard(text) {
-  const card = document.createElement("article");
-  card.className = "card card-message";
-  card.append(makeParagraph("message-text", text));
-  return card;
-}
-
-function makeEmptyCard(text) {
+function makeEmptyCard() {
   const card = document.createElement("article");
   card.className = "card card-empty";
-  card.append(makeParagraph("time", text));
+  card.append(makeParagraph("time", "--"));
   return card;
 }
 
@@ -123,17 +136,14 @@ function renderResult(result) {
   const container = document.getElementById("departures");
   container.replaceChildren();
 
-  const cards = [];
-  if (result.status === "ok") {
-    for (const dep of result.items) cards.push(makeDepartureCard(dep));
-  } else {
-    cards.push(makeMessageCard(MESSAGES[result.status]));
+  // Weekend / no more buses: just the message, no cards
+  if (result.status !== "ok") {
+    container.append(makeParagraph("message", MESSAGES[result.status]));
+    return;
   }
 
-  // Pad up to 4 cards: "--" normally, blank on weekends
-  const filler = result.status === "weekend" ? "" : "--";
-  while (cards.length < CARD_COUNT) cards.push(makeEmptyCard(filler));
-
+  const cards = result.items.map(makeDepartureCard);
+  while (cards.length < CARD_COUNT) cards.push(makeEmptyCard());
   container.append(...cards);
 }
 
@@ -147,7 +157,7 @@ function showError(err) {
   console.error(err);
   document
     .getElementById("departures")
-    .replaceChildren(makeMessageCard("Erro ao carregar os horários."));
+    .replaceChildren(makeParagraph("message", "Erro ao carregar os horários."));
   document.getElementById("clock-note").textContent += ` · Erro: ${err.message}`;
 }
 
@@ -175,7 +185,16 @@ function buildDepartures(texts, dir) {
     if (times === null) {
       throw new Error(`${cfg.file}: paragem "${stop}" não encontrada`);
     }
-    for (const minutes of times) list.push({ minutes, line: cfg.line, stop });
+    for (const minutes of times) {
+      list.push({
+        minutes,
+        line: cfg.line,
+        stop,
+        color: cfg.color,
+        text: cfg.text,
+        fav: Boolean(cfg.fav),
+      });
+    }
   }
   return list;
 }

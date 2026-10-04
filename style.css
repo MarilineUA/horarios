@@ -1,21 +1,26 @@
+/* ---------- Colors ---------- */
 :root {
   --bg: #f2f4f7;
   --card-bg: #ffffff;
+  --fav-bg: #c3f2bb;       /* FavLineBG */
+  --toggle-bg: #6956a0;    /* toggleBG */
   --text: #1b1f24;
   --text-muted: #5b6573;
-  --accent: #0b6bcb;
+  --text-late: #707987;    /* time of a bus that already left */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0f1216;
     --card-bg: #1a1f26;
+    --fav-bg: #24402a;     /* dark version of FavLineBG */
     --text: #f0f3f6;
     --text-muted: #9aa5b3;
-    --accent: #5aa9ff;
+    --text-late: #7d8794;
   }
 }
 
+/* ---------- Page ---------- */
 * {
   box-sizing: border-box;
 }
@@ -35,15 +40,38 @@ main {
 
 h1 {
   font-size: 1.25rem;
+  text-align: center;
   margin: 8px 0 16px;
 }
 
-#departures {
+/* ---------- Direction toggle ---------- */
+#direction {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 16px;
+  background: var(--toggle-bg);
+  border-radius: 999px;
 }
 
+#direction button {
+  flex: 1;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#direction button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--toggle-bg);
+}
+
+/* ---------- Cards ---------- */
 #departures {
   display: flex;
   flex-direction: column;
@@ -54,8 +82,8 @@ h1 {
   background: var(--card-bg);
   border-radius: 20px;
   padding: 16px 20px;
+  min-height: 92px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  
 
   display: grid;
   grid-template-columns: auto 1fr;
@@ -63,13 +91,18 @@ h1 {
     "time line"
     "time stop";
   column-gap: 20px;
+  row-gap: 4px;
   align-items: center;
-  min-height: 92px;
 }
 
 .card p {
   margin: 0;
 }
+
+.card-fav {
+  background: var(--fav-bg);
+}
+
 .time {
   grid-area: time;
   font-size: clamp(2.5rem, 12vw, 3.25rem);
@@ -78,11 +111,18 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
+.card-late .time {
+  color: var(--text-late);
+}
+
 .line {
   grid-area: line;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--accent);
+  justify-self: start;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .stop {
@@ -91,53 +131,8 @@ h1 {
   color: var(--text-muted);
 }
 
-#clock-note {
-  margin: 16px 4px 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.message {
-  margin: 24px 4px;
-  text-align: center;
-  font-size: 1.1rem;
-  color: var(--text-muted);
-}
-
-#direction {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  margin-bottom: 16px;
-  background: var(--card-bg);
-  border-radius: 999px;
-}
-
-#direction button {
-  flex: 1;
-  padding: 12px 8px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text-muted);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-#direction button[aria-pressed="true"] {
-  background: var(--accent);
-  color: #fff;
-}
-
-.card-message {
-  display: flex;
-  align-items: center;
-}
-
-.message-text {
-  font-size: 1.1rem;
-  font-weight: 600;
+.pin {
+  filter: grayscale(1); /* black-and-white pin */
 }
 
 .card-empty {
@@ -145,5 +140,20 @@ h1 {
 }
 
 .card-empty .time {
+  color: var(--text-muted);
+}
+
+/* ---------- Messages (weekend, no more buses, errors) ---------- */
+.message {
+  margin: 32px 8px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+#clock-note {
+  margin: 16px 4px 0;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
